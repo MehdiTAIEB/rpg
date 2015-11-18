@@ -104,6 +104,19 @@ function create () {
 		loopPathTop -= 25;
 	}
 
+	rockPathBot = game.add.physicsGroup();
+
+	var loopPathBot = 500;
+
+	for (var i = 0; i < 12; i++) {
+		y = 230;
+		rockPathBot.create(loopPathBot, y, 'rock')
+		loopPathBot -= 25;
+	}
+
+	for (var i = 0; i < rockPathBot.children.length; i++)
+		rockPathBot.children[i].body.immovable = true;
+
 	for (var i = 0; i < rockPathLeft.children.length; i++)
 		rockPathLeft.children[i].body.immovable = true;
 
@@ -158,41 +171,41 @@ function create () {
 
 		txt1 = textBox.create(spook.body.x, spook.body.y - 50, 'text1');
 		playerWalk = false;
-		game.time.events.add(1000, function () {
+		game.time.events.add(2000, function () {
 
 			txt1.kill();
 			txt1 = textBox.create(player.body.x - 250, player.body.y - 100, 'text4');
 
-			game.time.events.add(1000, function () {
+			game.time.events.add(4000, function () {
 
 				txt1.kill();
 				txt1 = textBox.create(spook.body.x + 40, spook.body.y - 50, 'node');
 
-				game.time.events.add(1000, function () {
+				game.time.events.add(2000, function () {
 
 					txt1.kill();
 					txt1 = textBox.create(spook.body.x, spook.body.y - 50, 'text2');
 
-					game.time.events.add(1000, function () {
+					game.time.events.add(2000, function () {
 
 						txt1.kill();
 						txt1 = textBox.create(spook.body.x - 75, spook.body.y - 55, 'text3');
 
-						game.time.events.add(1000, function () {
+						game.time.events.add(3500, function () {
 							txt1.kill();
 							txt1 = textBox.create(player.body.x - 40, player.body.y - 60, 'lnode');
 
-							game.time.events.add(1000, function () {
+							game.time.events.add(2000, function () {
 
 								txt1.kill();
 								txt1 = textBox.create(player.body.x - 110, player.body.y - 60, 'text8');
 
-								game.time.events.add(1000, function () {
+								game.time.events.add(2000, function () {
 
 									txt1.kill();
-									txt1 = textBox.create(spook.body.x + 100, spook.body.y + 100, 'push');
+									txt1 = textBox.create(spook.body.x - 20, spook.body.y - 50, 'push');
 
-									game.time.events.add(1000, function () {
+									game.time.events.add(2000, function () {
 										txt1.kill();
 										playerWalk = true;
 									}, this);
@@ -222,6 +235,7 @@ function update () {
 	game.physics.arcade.collide(player, rockPathRight);
 	game.physics.arcade.collide(player, rockPathTop);
 	game.physics.arcade.collide(player, rockPathLeft);
+	game.physics.arcade.collide(player, rockPathBot);
 
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
