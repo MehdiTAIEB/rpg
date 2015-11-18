@@ -29,7 +29,7 @@ function preload () {
 	game.load.image('text8', 'assets/textbox/text8.png');
 	game.load.image('node', 'assets/textbox/node.png');
 	game.load.image('lnode', 'assets/textbox/lnode.png');
-
+	game.load.image('push', 'assets/textbox/push.png');
 	game.load.spritesheet('player', 'assets/player/link.png', 32, 48, 16);
 }
 
@@ -47,11 +47,8 @@ function create () {
 	rock = game.add.physicsGroup();
 
 	rockTop1 = rock.create(0, 270, 'rock');
-	rockTop1.body.immovable = true;
-	
 	rockTop2 = rock.create(25, 270, 'rock');
-	rockTop2.body.immovable = true;
-	
+
 	rockTop3 = rock.create(50, 270, 'rock');
 	rockTop3.body.immovable = true;
 
@@ -74,14 +71,66 @@ function create () {
 	rockTop9.body.immovable = true;
 
 	rockBot1 = rock.create(0, 390, 'rock');
+	rockBot1.body.immovable = true;
+
 	rockBot2 = rock.create(25, 390, 'rock');
+	rockBot2.body.immovable = true;
+
 	rockBot3 = rock.create(50, 390, 'rock');
+	rockBot3.body.immovable = true;
+
 	rockBot4 = rock.create(75, 390, 'rock');
+	rockBot4.body.immovable = true;
+
 	rockBot5 = rock.create(100, 390, 'rock');
+	rockBot5.body.immovable = true;
+
 	rockBot6 = rock.create(125, 390, 'rock');
+	rockBot6.body.immovable = true;
+
 	rockBot7 = rock.create(150, 390, 'rock');
+	rockBot7.body.immovable = true;
+
 	rockBot8 = rock.create(175, 390, 'rock');
+	rockBot8.body.immovable = true;
+
 	rockBot9 = rock.create(200, 390, 'rock');
+	rockBot9.body.immovable = true;
+
+	rockRight1 = rock.create(225, 390, 'rock');
+	rockRight1.body.immovable = true;
+	
+	rockRight2 = rock.create(225, 365, 'rock');
+	rockRight2.body.immovable = true;
+
+	rockRight3 = rock.create(225, 340, 'rock');
+	rockRight3.body.immovable = true;																	// FAIRE 3 PHYSICS GROUP REDUIRE VARIABLES // loop ?
+
+	rockRight4 = rock.create(225, 315, 'rock');
+	rockRight4.body.immovable = true;
+
+	rockRight5 = rock.create(225, 290, 'rock');
+	rockRight5.body.immovable = true;
+
+	rockRight6 = rock.create(225, 265, 'rock');
+	rockRight6.body.immovable = true;
+
+	rockPathRight1 = rock.create(590, 455, 'rock');
+	rockPathRight2 = rock.create(590, 405, 'rock');
+	rockPathRight3 = rock.create(590, 430, 'rock');
+	rockPathRight4 = rock.create(590, 380, 'rock');
+	rockPathRight5 = rock.create(590, 355, 'rock');
+	rockPathRight6 = rock.create(590, 330, 'rock');
+	rockPathRight7 = rock.create(590, 305, 'rock');
+	rockPathRight8 = rock.create(590, 280, 'rock');
+	rockPathRight9 = rock.create(590, 255, 'rock');
+	rockPathRight10 = rock.create(590, 230, 'rock');
+	rockPathRight11 = rock.create(590, 205, 'rock');
+	rockPathRight12 = rock.create(590, 180, 'rock');
+	rockPathRight13 = rock.create(590, 155, 'rock');
+	rockPathRight14 = rock.create(590, 130, 'rock');
+	rockPathRight15 = rock.create(590, 105, 'rock');
+
 
 	bridges = game.add.physicsGroup();
 	bridges.create(99, 320, 'lbridge');
@@ -93,10 +142,9 @@ function create () {
 
 	water = game.add.physicsGroup();
 
-
 	textBox = game.add.physicsGroup();
 
-	player = game.add.sprite(390, 200, 'player');
+	player = game.add.sprite(550, 440, 'player');
 	game.physics.arcade.enable(player);
 
 	player.body.collideWorldBounds = true;
@@ -107,12 +155,9 @@ function create () {
 	player.animations.add('down', [0, 1, 2, 3, 0], 10, true);
 
 	woods = game.add.physicsGroup();
-	
-	w1 = woods.create(65, 295, 'wood');
-	w1.body.immovable = true;
 
-	w2 = woods.create(65, 350, 'wood');
-	w2.body.immovable = true;
+	w1 = woods.create(65, 350, 'wood');
+	w1.body.immovable = true;
 
 	cursors = game.input.keyboard.createCursorKeys();
 
@@ -150,8 +195,13 @@ function create () {
 								txt1.kill();
 								txt1 = textBox.create(player.body.x - 110, player.body.y - 60, 'text8');
 								
+								game.time.events.add(1000, function () {
+								txt1.kill();
+								txt1 = textBox.create(spook.body.x, spook.body.y, 'push');
 								playerWalk = true;
 								txt1.kill();
+
+								}, this);
 							}, this);
 						}, this);
 					}, this);
@@ -160,26 +210,7 @@ function create () {
 		}, this);
 // rock can be push player can move // bool variable
 
-/*	
-		game.time.events.add(1000, function () {
-			txt4 = textBox.create(60, 90, 'text4');
-		}, this);
-		
-
-		game.time.events.add(1000, function () {
-			txt4.kill();
-		}, this);
-*/
 		init = true;
-		/*
-		txt2 = textBox.create(10, 10, 'text2');
-		txt3 = textBox.create(20, 20, 'text3');
-		txt4 = textBox.create(30, 30, 'text4');
-		txt5 = textBox.create(40, 40, 'text5');
-		txt6 = textBox.create(50, 50, 'text6');
-		txt7 = textBox.create(60, 60, 'text7');
-		txt8 = textBox.create(70, 70, 'text8');
-		*/
 	};
 }
 
@@ -188,7 +219,9 @@ function update () {
 	game.physics.arcade.collide(player, fallWater); // function to set up new world
 	game.physics.arcade.collide(player, spook, startLore, null, this);
 	game.physics.arcade.collide(player, rock);
-
+	game.physics.arcade.collide(rockTop1, rockBot1); // function delete to let pass user not possible to move if dialog not setup
+	game.physics.arcade.collide(rockTop2, rockBot2);
+	
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
 
