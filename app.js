@@ -208,6 +208,8 @@ function create () {
 									game.time.events.add(2000, function () {
 										txt1.kill();
 										playerWalk = true;
+										rockPathTop.children[14].body.immovable = false;
+										rockPathTop.children[13].body.immovable = false;
 									}, this);
 								}, this);
 							}, this);
@@ -219,8 +221,7 @@ function create () {
 // rock can be push player can move // bool variable
 
 		init = true;
-		rockPathTop.children[14].body.immovable = false;
-		rockPathTop.children[13].body.immovable = false;
+
 	};
 }
 
