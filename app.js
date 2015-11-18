@@ -7,27 +7,25 @@ var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create
 
 function preload () {
 
-	game.load.image('map', 'assets/map.png');
+	game.load.image('map', 'assets/map/map.png');
 
-	game.load.image('lbridge', 'assets/lbridge.png');
-	game.load.image('rbridge', 'assets/rbridge.png');
+	game.load.image('lbridge', 'assets/map/lbridge.png');
+	game.load.image('rbridge', 'assets/map/rbridge.png');
 
-	game.load.image('wood', 'assets/wood.png');
+	game.load.image('wood', 'assets/map/wood.png');
 
-	game.load.image('water', 'assets/www.png')
+	game.load.image('water', 'assets/map/www.png');
+	game.load.image('solidWater', 'assets/map/cw.png');
 
-	game.load.image('pokeLean', 'assets/pokeLean.png')
+	game.load.image('pokeLean', 'assets/npc/pokeLean.png');
 
-	game.load.image('text1', 'assets/text1.png');
-	game.load.image('text2', 'assets/text2.png');
-	game.load.image('text3', 'assets/text3.png');
-	game.load.image('text4', 'assets/text4.png');
-	game.load.image('text5', 'assets/text5.png');
-	game.load.image('text6', 'assets/text6.png');
-	game.load.image('text7', 'assets/text7.png');
-	game.load.image('text8', 'assets/text8.png');
+	game.load.image('text1', 'assets/textbox/text1.png');
+	game.load.image('text3', 'assets/textbox/txt3.png');
+	game.load.image('text4', 'assets/textbox/text4.png');
+	game.load.image('text8', 'assets/textbox/text8.png');
+	game.load.image('node', 'assets/textbox/node.png');
 
-	game.load.spritesheet('player', 'assets/link.png', 32, 48, 16);
+	game.load.spritesheet('player', 'assets/player/link.png', 32, 48, 16);
 }
 
 function create () {
@@ -38,16 +36,20 @@ function create () {
 
 	npc = game.add.physicsGroup();
 	spook = npc.create(50, 120, 'pokeLean');
+	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
 	bridges = game.add.physicsGroup();
 	bridges.create(99, 320, 'lbridge');
 	bridges.create(160, 320, 'rbridge');
 
-	water = game.add.sprite(130, 320, 'water');
-	game.physics.arcade.enable(water);
-	water.body.immovable = true;
-	
+	fallWater = game.add.sprite(130, 320, 'water');
+	game.physics.arcade.enable(fallWater);
+	fallWater.body.immovable = true;
+
+	water = game.add.physicsGroup();
+
+
 	textBox = game.add.physicsGroup();
 
 	player = game.add.sprite(390, 200, 'player');
@@ -64,23 +66,41 @@ function create () {
 	
 	w1 = woods.create(65, 295, 'wood');
 	w1.body.immovable = true;
-	
+
 	w2 = woods.create(65, 350, 'wood');
 	w2.body.immovable = true;
-	
+
 	cursors = game.input.keyboard.createCursorKeys();
 
-	txt1 = textBox.create(60, 90, 'text1');
-	
+
 	initGame = function () {
-		
-		game.time.events.add(1000, function() {
+
+		txt1 = textBox.create(60, 90, 'text1');
+
+		game.time.events.add(1000, function () {
+
 			txt1.kill();
-			console.log('asd');
+			txt1 = textBox.create(player.body.y - 130, player.body.x - 80, 'text4');
+			
+			game.time.events.add(1000, function () {
+				txt1.kill();
+			}, this);
+		}, this);
+// rock can be push player can move // bool variable
+
+/*	
+		game.time.events.add(1000, function () {
+			txt4 = textBox.create(60, 90, 'text4');
 		}, this);
 		
+
+		game.time.events.add(1000, function () {
+			txt4.kill();
+		}, this);
+*/
 		init = true;
-		/*txt2 = textBox.create(10, 10, 'text2');
+		/*
+		txt2 = textBox.create(10, 10, 'text2');
 		txt3 = textBox.create(20, 20, 'text3');
 		txt4 = textBox.create(30, 30, 'text4');
 		txt5 = textBox.create(40, 40, 'text5');
@@ -93,15 +113,12 @@ function create () {
 
 function update () {
 
-	if (!init){
-		initGame();
-	}
-
-	game.physics.arcade.collide(player, water); // function to set up new world
+	game.physics.arcade.collide(player, fallWater); // function to set up new world
+	game.physics.arcade.collide(player, spook, startLore, null, this);
 
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
-	
+
 	if (cursors.left.isDown) {
 		player.animations.play('left', 10, false);
 		player.body.velocity.x = -200;
@@ -118,4 +135,8 @@ function update () {
 	}
 }
 
-//function load new world
+function startLore () {
+	console.log('asd');
+	if (!init)
+		initGame();
+}
