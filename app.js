@@ -61,8 +61,7 @@ function create () {
 	bag = game.add.sprite(605, 2, 'bag');
 	bag.scale.setTo(0.5, 0.5);
 
-	roucoul = game.add.sprite(50, 50, 'roucoul');
-
+	
 	racail = game.add.sprite(230, -10, 'racail');
 	game.physics.arcade.enable(racail);
 	racail.body.immovable = true;
@@ -71,8 +70,18 @@ function create () {
 	game.physics.arcade.enable(pokeball);
 	pokeball.body.immovable = true;
 
+	rouc = game.add.physicsGroup();
+
+
 	rockWaterTop = game.add.physicsGroup();
-	
+
+	for (var i = 0; i < 4; i++) {
+		
+		randx = Math.floor(Math.random() * (480 - 245 + 1) + 245);
+		randy = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+		rouc.create(randx, randy, 'roucoul');
+	}
+
 	var loopTop = 0;
 	
 	for (var i = 0; i < 9; i++) {
@@ -291,6 +300,14 @@ function update () {
 	game.physics.arcade.collide(player, rockPathBot);
 	game.physics.arcade.collide(player, pokeball, inventory, null, this);
 	game.physics.arcade.collide(rockPathTop, racail, vel, null, this);
+
+	/* set physics between rouc */
+	for (var i = 0; i < rouc.children.length; i++) {
+		
+		for (var y = 1; y <= rouc.children.length; y++) {
+			game.physics.arcade.collide(rouc.children[i], rouc.children[y]);
+		}
+	}
 
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
