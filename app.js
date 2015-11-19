@@ -17,7 +17,6 @@ function preload () {
 	game.load.image('lbridge', 'assets/map/lbridge.png');
 	game.load.image('rbridge', 'assets/map/rbridge.png');
 
-	game.load.image('wood', 'assets/map/wood.png');
 
 	game.load.image('pokeball', 'assets/map/pokeball.png');
 
@@ -195,11 +194,6 @@ function create () {
 	player.animations.add('up', [12, 13, 14, 15, 12], 10, true);
 	player.animations.add('down', [0, 1, 2, 3, 0], 10, true);
 
-	woods = game.add.physicsGroup();
-
-	w1 = woods.create(65, 350, 'wood');
-	w1.body.immovable = true;
-
 	cursors = game.input.keyboard.createCursorKeys();
 
 
@@ -300,13 +294,23 @@ function update () {
 	game.physics.arcade.collide(player, rockPathBot);
 	game.physics.arcade.collide(player, pokeball, inventory, null, this);
 	game.physics.arcade.collide(rockPathTop, racail, vel, null, this);
+	game.physics.arcade.collide(racail, player);
 
 	/* set physics between rouc */
 	for (var i = 0; i < rouc.children.length; i++) {
-		
+
+		randRoucX = Math.floor(Math.random() * (480 - 245 + 1) + 245);
+		randRoucX1 = Math.floor(Math.random() * (480 - 245 + 1) + 245);
+
+		randRoucY = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+		randRoucY1 = Math.floor(Math.random() * (420 - 230 + 1) + 230);
 		for (var y = 1; y <= rouc.children.length; y++) {
 			game.physics.arcade.collide(rouc.children[i], rouc.children[y]);
 		}
+
+		rouc.children[i].body.x = randRoucX;
+		rouc.children[i].body.y = randRoucY;
+
 	}
 
 	player.body.velocity.x = 0;
@@ -367,7 +371,10 @@ function inventory () {
 			spook.body.velocity.x = 0;
 			spook.body.velocity.y = 0;
 			adv = textBox.create(spook.body.x - 30, spook.body.y - 50, 'spush');
-			playerWalk = true;
+			game.time.events.add(1000, function () {
+				adv.destroy();
+				playerWalk = true;
+			}, this)
 		}, this);
 }
 
