@@ -71,7 +71,6 @@ function create () {
 
 	rouc = game.add.physicsGroup();
 
-
 	rockWaterTop = game.add.physicsGroup();
 
 	for (var i = 0; i < 4; i++) {
@@ -295,21 +294,67 @@ function update () {
 	game.physics.arcade.collide(player, pokeball, inventory, null, this);
 	game.physics.arcade.collide(rockPathTop, racail, vel, null, this);
 	game.physics.arcade.collide(racail, player);
-
+	game.physics.arcade.collide(rouc, rockPathLeft);
+	game.physics.arcade.collide(rouc, rockPathBot);
+	game.physics.arcade.collide(rouc, rockWaterRight);
 	/* set physics between rouc */
 	for (var i = 0; i < rouc.children.length; i++) {
+		rouc.children[i].body.collideWorldBounds = true;
+		
+		//randRoucX = Math.floor(Math.random() * (480 - 245 + 1) + 245);
+		//randRoucX1 = Math.floor(Math.random() * (480 - 245 + 1) + 245);
 
-		randRoucX = Math.floor(Math.random() * (480 - 245 + 1) + 245);
-		randRoucX1 = Math.floor(Math.random() * (480 - 245 + 1) + 245);
+		//randRoucY = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+		//randRoucY1 = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+		
+		if (rouc.children[i].body.x < 480 && rouc.children[i].body.x > 245 && rouc.children[i].body.y > 230 && rouc.children[i].y < 420){
 
-		randRoucY = Math.floor(Math.random() * (420 - 230 + 1) + 230);
-		randRoucY1 = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+			ways = ['left', 'right', 'top', 'bot', 'fix'];
+			way = ways[Math.floor(Math.random() * ways.length)];
+
+			speeds = [150, 300, 450, 660];
+			speed = speeds[Math.floor(Math.random() * speeds.length)];
+
+			//rouc.children[i].body.velocity.x = 0;
+			//rouc.children[i].body.velocity.y = 0;
+
+				switch (way) {
+					case 'left':
+						rouc.children[i].body.velocity.x = 0;
+						rouc.children[i].body.velocity.y = 0;
+						rouc.children[i].body.velocity.x -= speed;
+						break;
+					case 'right':
+						rouc.children[i].body.velocity.x = 0;
+						rouc.children[i].body.velocity.y = 0;
+						rouc.children[i].body.velocity.x = speed;
+						break;
+					case 'top':
+						rouc.children[i].body.velocity.x = 0;
+						rouc.children[i].body.velocity.y = 0;
+						rouc.children[i].body.velocity.y -= speed;
+						break;
+					case 'bot':
+						rouc.children[i].body.velocity.x = 0;
+						rouc.children[i].body.velocity.y = 0;
+						rouc.children[i].body.velocity.y = speed;
+						break;
+					case 'fix':
+						rouc.children[i].body.velocity.x = 0;
+						rouc.children[i].body.velocity.y = 0;
+						break;
+				}
+
+		}
+		else
+			rouc.children[i].body.velocity.x -= 2;
+
 		for (var y = 1; y <= rouc.children.length; y++) {
 			game.physics.arcade.collide(rouc.children[i], rouc.children[y]);
 		}
 
-		rouc.children[i].body.x = randRoucX;
-		rouc.children[i].body.y = randRoucY;
+		//rouc.children[i].body.x = randRoucX;
+		//rouc.children[i].body.y = randRoucY;
 
 	}
 
@@ -385,7 +430,7 @@ function startLore () {
 
 function vel () {
 	aye = textBox.create(racail.body.x + 50, racail.body.y + 10, 'aye');
-	
+
 	game.time.events.add(1000, function (){
 		for (var i = 0; i < textBox.children.length; i++) {
 			textBox.children[i].destroy();
