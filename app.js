@@ -1,7 +1,9 @@
 var map;
 var layer;
-var test;
+var startWalk = false;
 var init = false;
+var tp = false;
+var killTp;
 var playerWalk = true;
 var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
@@ -30,6 +32,7 @@ function preload () {
 	game.load.image('node', 'assets/textbox/node.png');
 	game.load.image('lnode', 'assets/textbox/lnode.png');
 	game.load.image('push', 'assets/textbox/push.png');
+	game.load.image('tp', 'assets/textbox/tp.png');
 	game.load.spritesheet('player', 'assets/player/link.png', 32, 48, 16);
 }
 
@@ -40,7 +43,7 @@ function create () {
 	map = game.add.sprite(0, 0, 'map');
 
 	npc = game.add.physicsGroup();
-	spook = npc.create(170, 120, 'pokeLean');
+	spook = npc.create(20, 20, 'pokeLean');
 	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
@@ -223,7 +226,30 @@ function create () {
 		init = true;
 
 	};
+
 }
+
+killTp = function () {
+
+	spook.body.velocity.y = 0; // teleportation
+	teleportation = textBox.create(spook.body.x - 20, spook.body.y - 50, 'tp');
+
+	game.time.events.add(2000, function () {
+
+		/* delete sprite */
+		spook.kill();
+		teleportation.destroy();
+
+		/* recreate spook */
+		spook = npc.create(160, 130, 'pokeLean');
+		game.physics.arcade.enable(spook);
+		spook.body.immovable = true;
+
+		/* end tp phase allow player to move */
+		tp = true;
+		playerWalk = true;
+	}, this);
+};
 
 function update () {
 
@@ -241,18 +267,43 @@ function update () {
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
 
+	if (!startWalk) {
+
+		if (spook.body.y < 70)
+			spook.body.velocity.y += 2;
+		else
+			spook.body.velocity.y -= 2
+	}
+	else {
+
+		if (!tp) {
+			playerWalk = false;
+			killTp();
+		}
+
+	}
+// check ordre et technique pour propre
+
 	if (playerWalk) {
 		if (cursors.left.isDown) {
+			if (player.body.y <= 230)
+				startWalk = true;
 			player.animations.play('left', 10, false);
 			player.body.velocity.x = -200;
 		} else if (cursors.right.isDown) {
+			if (player.body.y <= 230)
+				startWalk = true;
 			player.animations.play('right', 10, false);
 			player.body.velocity.x = 200;
 		}
 		if (cursors.up.isDown) {
+			if (player.body.y <= 230)
+				startWalk = true;
 			player.animations.play('up', 10, false);
 			player.body.velocity.y = -200;
 		} else if (cursors.down.isDown) {
+			if (player.body.y <= 230)
+				startWalk = true;
 			player.animations.play('down', 10, false);
 			player.body.velocity.y = 200;
 		}
