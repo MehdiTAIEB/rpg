@@ -16,6 +16,8 @@ function preload () {
 
 	game.load.image('wood', 'assets/map/wood.png');
 
+	game.load.image('pokeball', 'assets/map/pokeball.png');
+
 	game.load.image('rock', 'assets/map/rock.png');
 
 	game.load.image('water', 'assets/map/www.png');
@@ -47,6 +49,7 @@ function create () {
 	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
+	pokeball = game.add.sprite(30, 15, 'pokeball');
 	rockWaterTop = game.add.physicsGroup();
 	
 	var loopTop = 0;
@@ -206,7 +209,7 @@ function create () {
 								game.time.events.add(2000, function () {
 
 									txt1.kill();
-									txt1 = textBox.create(spook.body.x - 20, spook.body.y - 50, 'push');
+									txt1 = textBox.create(spook.body.x - 50, spook.body.y - 50, 'push');
 
 									game.time.events.add(2000, function () {
 										txt1.kill();
