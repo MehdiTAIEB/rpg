@@ -49,7 +49,10 @@ function create () {
 	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
-	pokeball = game.add.sprite(30, 15, 'pokeball');
+	pokeball = game.add.sprite(180, 15, 'pokeball');
+	game.physics.arcade.enable(pokeball);
+	spook.body.immovable = true;
+
 	rockWaterTop = game.add.physicsGroup();
 	
 	var loopTop = 0;
@@ -175,7 +178,7 @@ function create () {
 
 	initGame = function () {
 
-		txt1 = textBox.create(spook.body.x, spook.body.y - 50, 'text1');
+		txt1 = textBox.create(spook.body.x, spook.body.y - 50, 'text1'); // add !!!
 		playerWalk = false;
 		game.time.events.add(2000, function () {
 
@@ -246,7 +249,7 @@ killTp = function () {
 		spook.destroy();
 		
 		/* recreate spook */
-		spook = npc.create(160, 130, 'pokeLean');
+		spook = npc.create(160, 140, 'pokeLean');
 		game.physics.arcade.enable(spook);
 		spook.body.immovable = true;
 
@@ -268,6 +271,7 @@ function update () {
 	game.physics.arcade.collide(player, rockPathTop);
 	game.physics.arcade.collide(player, rockPathLeft);
 	game.physics.arcade.collide(player, rockPathBot);
+	game.physics.arcade.collide(player, pokeball);
 
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
