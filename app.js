@@ -5,6 +5,9 @@ var init = false;
 var tp = false;
 var killTp;
 var playerWalk = true;
+var test = {
+	item: 0
+};
 var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function preload () {
@@ -24,6 +27,8 @@ function preload () {
 	game.load.image('solidWater', 'assets/map/cw.png');
 
 	game.load.image('pokeLean', 'assets/npc/pokeLean.png');
+
+	game.load.image('bag', 'assets/player/bag.png');
 
 	game.load.image('text1', 'assets/textbox/text1.png');
 	game.load.image('text3', 'assets/textbox/txt3.png');
@@ -49,9 +54,12 @@ function create () {
 	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
+	bag = game.add.sprite(605, 2, 'bag');
+	bag.scale.setTo(0.5, 0.5);
+
 	pokeball = game.add.sprite(180, 15, 'pokeball');
 	game.physics.arcade.enable(pokeball);
-	spook.body.immovable = true;
+	pokeball.body.immovable = true;
 
 	rockWaterTop = game.add.physicsGroup();
 	
@@ -107,7 +115,7 @@ function create () {
 
 	var loopPathTop = 590;
 
-	for (var i = 0; i < 18; i++) {
+	for (var i = 0; i < 15; i++) {
 		y = 105;
 		rockPathTop.create(loopPathTop, y, 'rock');
 		loopPathTop -= 25;
@@ -271,7 +279,7 @@ function update () {
 	game.physics.arcade.collide(player, rockPathTop);
 	game.physics.arcade.collide(player, rockPathLeft);
 	game.physics.arcade.collide(player, rockPathBot);
-	game.physics.arcade.collide(player, pokeball);
+	game.physics.arcade.collide(player, pokeball, inventory, null, this);
 
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
@@ -316,6 +324,12 @@ function update () {
 			player.body.velocity.y = 200;
 		}
 	}
+}
+
+function inventory () {
+	pokeball.destroy();
+	pokeball = game.add.sprite(610, 5, 'pokeball');
+	console.log(test);
 }
 
 function startLore () {
