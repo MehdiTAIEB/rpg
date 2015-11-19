@@ -177,7 +177,7 @@ function create () {
 		game.time.events.add(2000, function () {
 
 			txt1.kill();
-			txt1 = textBox.create(player.body.x - 250, player.body.y - 100, 'text4');
+			txt1 = textBox.create(player.body.x - 240, player.body.y - 100, 'text4');
 
 			game.time.events.add(4000, function () {
 
@@ -237,9 +237,11 @@ killTp = function () {
 	game.time.events.add(2000, function () {
 
 		/* delete sprite */
-		spook.kill();
-		teleportation.destroy();
-
+		for (var i = 0; i < textBox.children.length; i++) {
+			textBox.children[i].destroy();
+		}
+		spook.destroy();
+		
 		/* recreate spook */
 		spook = npc.create(160, 130, 'pokeLean');
 		game.physics.arcade.enable(spook);
@@ -275,7 +277,6 @@ function update () {
 			spook.body.velocity.y -= 2
 	}
 	else {
-
 		if (!tp) {
 			playerWalk = false;
 			killTp();
