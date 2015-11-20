@@ -1,10 +1,20 @@
+var randomMove;
 var map;
 var layer;
+var pfall;
 var startWalk = false;
 var init = false;
 var tp = false;
 var killTp;
 var playerWalk = true;
+var pvel = 200;
+var racail;
+var player;
+var throwed = false;
+var spook;
+var d;
+var lastMove;
+var t;
 var slot = {
 	item: 0
 };
@@ -17,8 +27,11 @@ function preload () {
 	game.load.image('lbridge', 'assets/map/lbridge.png');
 	game.load.image('rbridge', 'assets/map/rbridge.png');
 
-
+	game.load.image('splash', 'assets/map/splash.gif');
+	game.load.image('over', 'assets/map/over.png');
 	game.load.image('pokeball', 'assets/map/pokeball.png');
+
+	game.load.image('puurp', 'assets/map/puurp.png');
 
 	game.load.image('rock', 'assets/map/rock.png');
 
@@ -42,48 +55,76 @@ function preload () {
 	game.load.image('tp', 'assets/textbox/tp.png');
 	game.load.image('spush', 'assets/textbox/spush.png');
 	game.load.image('aye', 'assets/textbox/aye.png');
-
+	game.load.image('haha', 'assets/textbox/haha.png');
+	game.load.image('pot', 'assets/map/pot.png');
 	game.load.spritesheet('player', 'assets/player/link.png', 32, 48, 16);
+	
+	game.load.image('f1', 'assets/player/f1.png');
+	game.load.image('f2', 'assets/player/f2.png');
+	game.load.image('f3', 'assets/player/f3.png');
+	game.load.image('f4', 'assets/player/f4.png');
+	game.load.image('f5', 'assets/player/f5.png');
+	game.load.image('f6', 'assets/player/f6.png');
+	game.load.image('f7', 'assets/player/f7.png');
+	game.load.image('f8', 'assets/player/f8.png');
+	game.load.image('f9', 'assets/player/f9.png');
+	game.load.image('f10', 'assets/player/f10.png');
+	game.load.image('f11', 'assets/player/f11.png');
+	game.load.image('f12', 'assets/player/f12.png');
 }
 
 function create () {
 
+	d = game.input.keyboard.addKey(Phaser.Keyboard.D);
+	t = game.input.keyboard.addKey(Phaser.Keyboard.T);
+
+	game.world.setBounds(0, 0, 1600, 480);
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
 	map = game.add.sprite(0, 0, 'map');
 
 	npc = game.add.physicsGroup();
-	spook = npc.create(20, 20, 'pokeLean');
+	spook = npc.create(920, 80, 'pokeLean');
 	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
-	bag = game.add.sprite(605, 2, 'bag');
-	bag.scale.setTo(0.5, 0.5);
+
+	pfall = game.add.physicsGroup();
 
 	
-	racail = game.add.sprite(230, -10, 'racail');
+	bag = game.add.sprite(830, 2, 'bag');
+	bag.scale.setTo(0.5, 0.5);
+	bag.fixedToCamera = true;
+	bag.cameraOffset.x = 600;
+	bag.cameraOffset.y = 2;
+
+	racail = game.add.sprite(452, -10, 'racail');
 	game.physics.arcade.enable(racail);
 	racail.body.immovable = true;
 
-	pokeball = game.add.sprite(180, 15, 'pokeball');
+	pokeball = game.add.sprite(400, 15, 'pokeball');
 	game.physics.arcade.enable(pokeball);
 	pokeball.body.immovable = true;
 
-	rouc = game.add.physicsGroup();
+	pot = game.add.sprite(10, 10, 'pot');
+	game.physics.arcade.enable(pot);
+	pot.body.immovable = true;
 
+	rouc = game.add.physicsGroup();
 
 	rockWaterTop = game.add.physicsGroup();
 
 	for (var i = 0; i < 4; i++) {
 		
-		randx = Math.floor(Math.random() * (480 - 245 + 1) + 245);
-		randy = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+		randx = Math.floor(Math.random() * (480 - 245 + 1) + 465);
+		randy = Math.floor(Math.random() * (420 - 230 + 1) + 450);
 		rouc.create(randx, randy, 'roucoul');
+		rouc.children[i].body.collideWorldBounds = true;
 	}
 
 	var loopTop = 0;
 	
-	for (var i = 0; i < 9; i++) {
+	for (var i = 0; i < 18; i++) {
 		y = 270;
 		rockWaterTop.create(loopTop, y, 'rock');
 		loopTop += 25;
@@ -93,7 +134,7 @@ function create () {
 
 	var loopBot = 0;
 
-	for (var i = 0; i < 9; i++) {
+	for (var i = 0; i < 18; i++) {
 		y = 390;
 		rockWaterBot.create(loopBot, y, 'rock');
 		loopBot += 25;
@@ -104,7 +145,7 @@ function create () {
 	var loopRight = 390;
 
 	for (var i = 0; i < 6; i++) {
-		x = 225;
+		x = 455;
 		rockWaterRight.create(x, loopRight, 'rock');
 		loopRight -= 25;
 	}
@@ -114,7 +155,7 @@ function create () {
 	var loopPathRight = 455;
 
 	for (var i = 0; i < 14; i++) {
-		x = 590;
+		x = 830;
 		rockPathRight.create(x, loopPathRight, 'rock');
 		loopPathRight -= 25;
 	}
@@ -124,14 +165,14 @@ function create () {
 	var loopPathLeft = 455;
 
 	for (var i = 0; i < 10; i++) {
-		x = 525;
+		x = 750;
 		rockPathLeft.create(x, loopPathLeft, 'rock');
 		loopPathLeft -= 25;
 	}
 
 	rockPathTop = game.add.physicsGroup();
 
-	var loopPathTop = 590;
+	var loopPathTop = 800;
 
 	for (var i = 0; i < 15; i++) {
 		y = 105;
@@ -141,7 +182,7 @@ function create () {
 
 	rockPathBot = game.add.physicsGroup();
 
-	var loopPathBot = 500;
+	var loopPathBot = 720;
 
 	for (var i = 0; i < 12; i++) {
 		y = 230;
@@ -173,10 +214,10 @@ function create () {
 		rockPathRight.children[i].body.immovable = true;
 
 	bridges = game.add.physicsGroup();
-	bridges.create(99, 320, 'lbridge');
-	bridges.create(160, 320, 'rbridge');
+	bridges.create(299, 320, 'lbridge');
+	bridges.create(360, 320, 'rbridge');
 
-	fallWater = game.add.sprite(130, 320, 'water');
+	fallWater = game.add.sprite(330, 320, 'water');
 	game.physics.arcade.enable(fallWater);
 	fallWater.body.immovable = true;
 
@@ -184,9 +225,10 @@ function create () {
 
 	textBox = game.add.physicsGroup();
 
-	player = game.add.sprite(550, 440, 'player');
+	
+	player = game.add.sprite(790, 440, 'player');
 	game.physics.arcade.enable(player);
-
+	game.camera.follow(player);
 	player.body.collideWorldBounds = true;
 
 	player.animations.add('right', [8, 9, 10, 11, 8], 10, true);
@@ -194,8 +236,13 @@ function create () {
 	player.animations.add('up', [12, 13, 14, 15, 12], 10, true);
 	player.animations.add('down', [0, 1, 2, 3, 0], 10, true);
 
-	cursors = game.input.keyboard.createCursorKeys();
 
+	splash = game.add.sprite(0,0,'splash');
+	splash.fixedToCamera = true;
+	splash.cameraOffset.x = 0;
+	splash.cameraOffset.y = 0;
+
+	cursors = game.input.keyboard.createCursorKeys();
 
 	initGame = function () {
 
@@ -270,7 +317,7 @@ killTp = function () {
 		spook.destroy();
 		
 		/* recreate spook */
-		spook = npc.create(160, 140, 'pokeLean');
+		spook = npc.create(380, 140, 'pokeLean');
 		game.physics.arcade.enable(spook);
 		spook.body.immovable = true;
 
@@ -282,7 +329,7 @@ killTp = function () {
 
 function update () {
 
-	game.physics.arcade.collide(player, fallWater); // function to set up new world
+	game.physics.arcade.collide(player, fallWater, falldown, null, this); // function to set up new world
 	game.physics.arcade.collide(player, spook, startLore, null, this);
 	game.physics.arcade.collide(player, rockWaterTop);
 	game.physics.arcade.collide(player, rockWaterRight);
@@ -295,21 +342,32 @@ function update () {
 	game.physics.arcade.collide(player, pokeball, inventory, null, this);
 	game.physics.arcade.collide(rockPathTop, racail, vel, null, this);
 	game.physics.arcade.collide(racail, player);
-
+	game.physics.arcade.collide(rouc, rockPathLeft);
+	game.physics.arcade.collide(rouc, rockPathBot); //check chicken box for mutual hit
+	game.physics.arcade.collide(rouc, rockWaterRight); // move camera
+	game.physics.arcade.collide(rouc, rockWaterTop);
+	game.physics.arcade.collide(rouc, rockWaterBot);
+	game.physics.arcade.collide(player, pot, fonsd, null, this);
+	game.physics.arcade.collide(racail, pokeball, catc, null, this);
+	game.physics.arcade.collide(pokeball, rockPathTop, release, null, this);
+	game.physics.arcade.collide(pokeball, rockPathBot, release, null, this);
+	game.physics.arcade.collide(pokeball, rockWaterTop, release, null, this);
+	game.physics.arcade.collide(pokeball, rockPathBot, release, null, this);
+	game.physics.arcade.collide(pokeball, rockWaterRight, release, null, this);
+	game.physics.arcade.collide(pokeball, rockWaterBot, release, null, this);
+	game.physics.arcade.collide(pokeball, rockPathRight, release, null, this);
+	game.physics.arcade.collide(pokeball, rockPathLeft, release, null, this);
 	/* set physics between rouc */
 	for (var i = 0; i < rouc.children.length; i++) {
+		rouc.children[i].body.collideWorldBounds = true;
 
-		randRoucX = Math.floor(Math.random() * (480 - 245 + 1) + 245);
-		randRoucX1 = Math.floor(Math.random() * (480 - 245 + 1) + 245);
+		ways = ['left', 'right', 'top', 'bot', 'fix'];
+		way = ways[Math.floor(Math.random() * ways.length)];
 
-		randRoucY = Math.floor(Math.random() * (420 - 230 + 1) + 230);
-		randRoucY1 = Math.floor(Math.random() * (420 - 230 + 1) + 230);
-		for (var y = 1; y <= rouc.children.length; y++) {
-			game.physics.arcade.collide(rouc.children[i], rouc.children[y]);
-		}
+		speeds = [50, 100, 150, 200];
+		speed = speeds[Math.floor(Math.random() * speeds.length)];
 
-		rouc.children[i].body.x = randRoucX;
-		rouc.children[i].body.y = randRoucY;
+		randomMove(i, speed, way);
 
 	}
 
@@ -331,30 +389,77 @@ function update () {
 
 	}
 // check ordre et technique pour propre
+if (d.isDown && slot.item) {
+	throwed = true;
+	pokeball.destroy();
+	pokeball = game.add.sprite(400, 15, 'pokeball');
+	game.physics.arcade.enable(pokeball);
+	pokeball.body.immovable = true;
+}
 
+if (t.isDown && slot.item) {
+	pokeball.destroy();
+	pokeball = game.add.sprite(player.body.x + 10, player.body.y, 'pokeball');
+	game.physics.arcade.enable(pokeball);
+	pokeball.body.velocity.x += 200;
+}
 	if (playerWalk) {
 		if (cursors.left.isDown) {
+			splash.destroy();
 			if (player.body.y <= 230)
 				startWalk = true;
 			player.animations.play('left', 10, false);
-			player.body.velocity.x = -200;
+			player.body.velocity.x = -pvel;
+			lastMove = 'x';
 		} else if (cursors.right.isDown) {
+			splash.destroy();
 			if (player.body.y <= 230)
 				startWalk = true;
 			player.animations.play('right', 10, false);
-			player.body.velocity.x = 200;
+			player.body.velocity.x = pvel;
+			lastMove = 'x';
 		}
 		if (cursors.up.isDown) {
+			splash.destroy();
 			if (player.body.y <= 230)
 				startWalk = true;
 			player.animations.play('up', 10, false);
-			player.body.velocity.y = -200;
+			player.body.velocity.y = -pvel;
+			lastMove = 'y';
 		} else if (cursors.down.isDown) {
+			splash.destroy();
 			if (player.body.y <= 230)
 				startWalk = true;
 			player.animations.play('down', 10, false);
-			player.body.velocity.y = 200;
+			player.body.velocity.y = pvel;
+			lastMove = 'y';
 		}
+	}
+}
+
+function randomMove (i, speed, way) {
+
+	switch (way) {
+		case 'left':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.x -= speed;
+			}, this);
+			break;
+		case 'right':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.x = speed;
+			}, this);
+			break;
+		case 'top':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.y -= speed;
+			}, this);
+			break;
+		case 'bot':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.y = speed;
+			}, this);
+			break;
 	}
 }
 
@@ -362,11 +467,35 @@ function inventory () {
 	playerWalk = false;
 	pokeball.destroy();
 	pokeball = game.add.sprite(610, 5, 'pokeball');
+	game.physics.arcade.enable(pokeball);
+	pokeball.body.collideWorldBounds = true;
+
+	pokeball.fixedToCamera = true;
+	pokeball.cameraOffset.x = 605;
+	pokeball.cameraOffset.y = 4;
+
+
+	tt = game.add.text(pokeball.body.x - 50, pokeball.body.y, 'D to delete');
+	game.physics.arcade.enable(tt);
+	tt.fixedToCamera = true;
+	tt.cameraOffset.x = 455;
+	tt.cameraOffset.y = 4;
+
+	tt1 = game.add.text(pokeball.body.x - 50, pokeball.body.y + 30, 'T to throw');
+	game.physics.arcade.enable(tt1);
+	tt1.fixedToCamera = true;
+	tt1.cameraOffset.x = 475;
+	tt1.cameraOffset.y = 24;
+
+	game.physics.arcade.enable(tt);
+
 	slot.item = 1;
 
-	spook.body.velocity.x -= 20;
-	spook.body.velocity.y += 20;
-	
+	if (!throwed) {
+		spook.body.velocity.x -= 20;
+		spook.body.velocity.y += 20;
+	}
+
 	game.time.events.add(3000, function () {
 			spook.body.velocity.x = 0;
 			spook.body.velocity.y = 0;
@@ -385,10 +514,71 @@ function startLore () {
 
 function vel () {
 	aye = textBox.create(racail.body.x + 50, racail.body.y + 10, 'aye');
-	
+
 	game.time.events.add(1000, function (){
 		for (var i = 0; i < textBox.children.length; i++) {
 			textBox.children[i].destroy();
 		}
 	}, this)
+}
+
+function falldown () {
+		player.visible = false;
+			test = game.add.sprite(player.body.x + 30, player.body.y + 10, 'f1');
+			game.add.text(100, 100, 'YOU DIED');
+			textBox.create(spook.body.x + 10, spook.body.y - 50, 'haha');
+			game.time.events.add(3000, function () {
+				over = game.add.sprite(0,0,'over');
+				game.time.events.add(2000, function () {
+					location.reload();
+				}, this)
+			}, this);
+	// potion
+}
+
+function fonsd () {
+	pot.destroy();
+	puurp = game.add.sprite(0, 0, 'puurp');
+	puurp.alpha = 0.6;
+	pvel = 50;
+	game.time.events.add(2000, function () {
+		puurp.alpha = 0.7;
+		game.time.events.add(2500, function () {
+			puurp.alpha = 0.6;
+			game.time.events.add(3000, function () {
+				puurp.alpha = 0.5;
+				game.time.events.add(3500, function () {
+					puurp.alpha = 0.4;
+					game.time.events.add(1000, function () {
+						puurp.alpha = 0.3;
+						game.time.events.add(1000, function () {
+							puurp.alpha = 0.2;
+							game.time.events.add(1000, function () {
+								puurp.alpha = 0.1;
+								game.time.events.add(1000, function () {
+									puurp.visible = false;
+									pvel = 200;
+								}, this);
+							}, this);
+						}, this);
+					}, this);
+				}, this);
+			}, this);
+		}, this);
+	}, this)
+}
+
+function catc () {
+	throwed = true;
+	if (throwed) {
+		slot.pok = 1;
+		racail.destroy();
+	}
+}
+
+function release () {
+	if (slot.pok == true) {
+		game.add.sprite(pokeball.body.x + 10, pokeball.body.y, 'racail');
+		slot.pok == false;
+	}
 }
