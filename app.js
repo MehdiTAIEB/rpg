@@ -1,3 +1,4 @@
+var randomMove;
 var map;
 var layer;
 var startWalk = false;
@@ -48,24 +49,27 @@ function preload () {
 
 function create () {
 
+game.world.setBounds(0, 0, 1600, 480);
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
 	map = game.add.sprite(0, 0, 'map');
 
 	npc = game.add.physicsGroup();
-	spook = npc.create(20, 20, 'pokeLean');
+	spook = npc.create(920, 80, 'pokeLean');
 	game.physics.arcade.enable(spook);
 	spook.body.immovable = true;
 
-	bag = game.add.sprite(605, 2, 'bag');
+	bag = game.add.sprite(830, 2, 'bag');
 	bag.scale.setTo(0.5, 0.5);
+	bag.fixedToCamera = true;
+	bag.cameraOffset.x = 600;
+	bag.cameraOffset.y = 2;
 
-	
-	racail = game.add.sprite(230, -10, 'racail');
+	racail = game.add.sprite(452, -10, 'racail');
 	game.physics.arcade.enable(racail);
 	racail.body.immovable = true;
 
-	pokeball = game.add.sprite(180, 15, 'pokeball');
+	pokeball = game.add.sprite(400, 15, 'pokeball');
 	game.physics.arcade.enable(pokeball);
 	pokeball.body.immovable = true;
 
@@ -75,14 +79,15 @@ function create () {
 
 	for (var i = 0; i < 4; i++) {
 		
-		randx = Math.floor(Math.random() * (480 - 245 + 1) + 245);
-		randy = Math.floor(Math.random() * (420 - 230 + 1) + 230);
+		randx = Math.floor(Math.random() * (480 - 245 + 1) + 465);
+		randy = Math.floor(Math.random() * (420 - 230 + 1) + 450);
 		rouc.create(randx, randy, 'roucoul');
+		rouc.children[i].body.collideWorldBounds = true;
 	}
 
 	var loopTop = 0;
 	
-	for (var i = 0; i < 9; i++) {
+	for (var i = 0; i < 18; i++) {
 		y = 270;
 		rockWaterTop.create(loopTop, y, 'rock');
 		loopTop += 25;
@@ -92,7 +97,7 @@ function create () {
 
 	var loopBot = 0;
 
-	for (var i = 0; i < 9; i++) {
+	for (var i = 0; i < 18; i++) {
 		y = 390;
 		rockWaterBot.create(loopBot, y, 'rock');
 		loopBot += 25;
@@ -103,7 +108,7 @@ function create () {
 	var loopRight = 390;
 
 	for (var i = 0; i < 6; i++) {
-		x = 225;
+		x = 455;
 		rockWaterRight.create(x, loopRight, 'rock');
 		loopRight -= 25;
 	}
@@ -113,7 +118,7 @@ function create () {
 	var loopPathRight = 455;
 
 	for (var i = 0; i < 14; i++) {
-		x = 590;
+		x = 830;
 		rockPathRight.create(x, loopPathRight, 'rock');
 		loopPathRight -= 25;
 	}
@@ -123,14 +128,14 @@ function create () {
 	var loopPathLeft = 455;
 
 	for (var i = 0; i < 10; i++) {
-		x = 525;
+		x = 750;
 		rockPathLeft.create(x, loopPathLeft, 'rock');
 		loopPathLeft -= 25;
 	}
 
 	rockPathTop = game.add.physicsGroup();
 
-	var loopPathTop = 590;
+	var loopPathTop = 800;
 
 	for (var i = 0; i < 15; i++) {
 		y = 105;
@@ -140,7 +145,7 @@ function create () {
 
 	rockPathBot = game.add.physicsGroup();
 
-	var loopPathBot = 500;
+	var loopPathBot = 720;
 
 	for (var i = 0; i < 12; i++) {
 		y = 230;
@@ -172,10 +177,10 @@ function create () {
 		rockPathRight.children[i].body.immovable = true;
 
 	bridges = game.add.physicsGroup();
-	bridges.create(99, 320, 'lbridge');
-	bridges.create(160, 320, 'rbridge');
+	bridges.create(299, 320, 'lbridge');
+	bridges.create(360, 320, 'rbridge');
 
-	fallWater = game.add.sprite(130, 320, 'water');
+	fallWater = game.add.sprite(330, 320, 'water');
 	game.physics.arcade.enable(fallWater);
 	fallWater.body.immovable = true;
 
@@ -183,9 +188,9 @@ function create () {
 
 	textBox = game.add.physicsGroup();
 
-	player = game.add.sprite(550, 440, 'player');
+	player = game.add.sprite(790, 440, 'player');
 	game.physics.arcade.enable(player);
-
+	game.camera.follow(player);
 	player.body.collideWorldBounds = true;
 
 	player.animations.add('right', [8, 9, 10, 11, 8], 10, true);
@@ -269,7 +274,7 @@ killTp = function () {
 		spook.destroy();
 		
 		/* recreate spook */
-		spook = npc.create(160, 140, 'pokeLean');
+		spook = npc.create(380, 140, 'pokeLean');
 		game.physics.arcade.enable(spook);
 		spook.body.immovable = true;
 
@@ -281,7 +286,7 @@ killTp = function () {
 
 function update () {
 
-	game.physics.arcade.collide(player, fallWater); // function to set up new world
+	game.physics.arcade.collide(player, fallWater, falldown, null, this); // function to set up new world
 	game.physics.arcade.collide(player, spook, startLore, null, this);
 	game.physics.arcade.collide(player, rockWaterTop);
 	game.physics.arcade.collide(player, rockWaterRight);
@@ -295,66 +300,21 @@ function update () {
 	game.physics.arcade.collide(rockPathTop, racail, vel, null, this);
 	game.physics.arcade.collide(racail, player);
 	game.physics.arcade.collide(rouc, rockPathLeft);
-	game.physics.arcade.collide(rouc, rockPathBot);
-	game.physics.arcade.collide(rouc, rockWaterRight);
+	game.physics.arcade.collide(rouc, rockPathBot); //check chicken box for mutual hit
+	game.physics.arcade.collide(rouc, rockWaterRight); // move camera
+	game.physics.arcade.collide(rouc, rockWaterTop);
+	game.physics.arcade.collide(rouc, rockWaterBot);
 	/* set physics between rouc */
 	for (var i = 0; i < rouc.children.length; i++) {
 		rouc.children[i].body.collideWorldBounds = true;
-		
-		//randRoucX = Math.floor(Math.random() * (480 - 245 + 1) + 245);
-		//randRoucX1 = Math.floor(Math.random() * (480 - 245 + 1) + 245);
 
-		//randRoucY = Math.floor(Math.random() * (420 - 230 + 1) + 230);
-		//randRoucY1 = Math.floor(Math.random() * (420 - 230 + 1) + 230);
-		
-		if (rouc.children[i].body.x < 480 && rouc.children[i].body.x > 245 && rouc.children[i].body.y > 230 && rouc.children[i].y < 420){
+		ways = ['left', 'right', 'top', 'bot', 'fix'];
+		way = ways[Math.floor(Math.random() * ways.length)];
 
-			ways = ['left', 'right', 'top', 'bot', 'fix'];
-			way = ways[Math.floor(Math.random() * ways.length)];
+		speeds = [50, 100, 150, 200];
+		speed = speeds[Math.floor(Math.random() * speeds.length)];
 
-			speeds = [150, 300, 450, 660];
-			speed = speeds[Math.floor(Math.random() * speeds.length)];
-
-			//rouc.children[i].body.velocity.x = 0;
-			//rouc.children[i].body.velocity.y = 0;
-
-				switch (way) {
-					case 'left':
-						rouc.children[i].body.velocity.x = 0;
-						rouc.children[i].body.velocity.y = 0;
-						rouc.children[i].body.velocity.x -= speed;
-						break;
-					case 'right':
-						rouc.children[i].body.velocity.x = 0;
-						rouc.children[i].body.velocity.y = 0;
-						rouc.children[i].body.velocity.x = speed;
-						break;
-					case 'top':
-						rouc.children[i].body.velocity.x = 0;
-						rouc.children[i].body.velocity.y = 0;
-						rouc.children[i].body.velocity.y -= speed;
-						break;
-					case 'bot':
-						rouc.children[i].body.velocity.x = 0;
-						rouc.children[i].body.velocity.y = 0;
-						rouc.children[i].body.velocity.y = speed;
-						break;
-					case 'fix':
-						rouc.children[i].body.velocity.x = 0;
-						rouc.children[i].body.velocity.y = 0;
-						break;
-				}
-
-		}
-		else
-			rouc.children[i].body.velocity.x -= 2;
-
-		for (var y = 1; y <= rouc.children.length; y++) {
-			game.physics.arcade.collide(rouc.children[i], rouc.children[y]);
-		}
-
-		//rouc.children[i].body.x = randRoucX;
-		//rouc.children[i].body.y = randRoucY;
+		randomMove(i, speed, way);
 
 	}
 
@@ -403,10 +363,40 @@ function update () {
 	}
 }
 
+function randomMove (i, speed, way) {
+
+	switch (way) {
+		case 'left':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.x -= speed;
+			}, this);
+			break;
+		case 'right':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.x = speed;
+			}, this);
+			break;
+		case 'top':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.y -= speed;
+			}, this);
+			break;
+		case 'bot':
+			game.time.events.add(3000, function () {
+				rouc.children[i].body.velocity.y = speed;
+			}, this);
+			break;
+	}
+}
+
 function inventory () {
 	playerWalk = false;
 	pokeball.destroy();
 	pokeball = game.add.sprite(610, 5, 'pokeball');
+	pokeball.fixedToCamera = true;
+	pokeball.cameraOffset.x = 605;
+	pokeball.cameraOffset.y = 4;
+
 	slot.item = 1;
 
 	spook.body.velocity.x -= 20;
@@ -436,4 +426,10 @@ function vel () {
 			textBox.children[i].destroy();
 		}
 	}, this)
+}
+
+function falldown () {
+	console.log('dasd'); // sprite fall; bon ordre decale sur l'eau
+	//start end 
+	// potion
 }
