@@ -475,10 +475,10 @@ function inventory () {
 	pokeball.cameraOffset.y = 4;
 
 
-	tt = game.add.text(pokeball.body.x - 50, pokeball.body.y, 'D to drop');
+	tt = game.add.text(pokeball.body.x - 50, pokeball.body.y, 'D to delete');
 	game.physics.arcade.enable(tt);
 	tt.fixedToCamera = true;
-	tt.cameraOffset.x = 475;
+	tt.cameraOffset.x = 455;
 	tt.cameraOffset.y = 4;
 
 	tt1 = game.add.text(pokeball.body.x - 50, pokeball.body.y + 30, 'T to throw');
@@ -529,6 +529,9 @@ function falldown () {
 			textBox.create(spook.body.x + 10, spook.body.y - 50, 'haha');
 			game.time.events.add(3000, function () {
 				over = game.add.sprite(0,0,'over');
+				game.time.events.add(2000, function () {
+					location.reload();
+				}, this)
 			}, this);
 	// potion
 }
