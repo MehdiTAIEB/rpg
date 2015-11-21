@@ -9,6 +9,7 @@ var killTp;
 var playerWalk = true;
 var pvel = 200;
 var racail;
+var music;
 var player;
 var throwed = false;
 var spook;
@@ -18,10 +19,11 @@ var t;
 var slot = {
 	item: 0
 };
+
 var game = new Phaser.Game(640, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function preload () {
-
+	game.load.audio('mus', 'assets/hero.ogg');
 	game.load.image('map', 'assets/map/map.png');
 
 	game.load.image('lbridge', 'assets/map/lbridge.png');
@@ -78,6 +80,10 @@ function create () {
 	d = game.input.keyboard.addKey(Phaser.Keyboard.D);
 	t = game.input.keyboard.addKey(Phaser.Keyboard.T);
 
+	music = game.add.audio('mus');
+
+	music.play();
+
 	game.world.setBounds(0, 0, 1600, 480);
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -91,7 +97,6 @@ function create () {
 
 	pfall = game.add.physicsGroup();
 
-	
 	bag = game.add.sprite(830, 2, 'bag');
 	bag.scale.setTo(0.5, 0.5);
 	bag.fixedToCamera = true;
@@ -533,11 +538,11 @@ function falldown () {
 					location.reload();
 				}, this)
 			}, this);
-	// potion
 }
 
 function fonsd () {
 	pot.destroy();
+	music.playbackRate=0.5;
 	puurp = game.add.sprite(0, 0, 'puurp');
 	puurp.alpha = 0.6;
 	pvel = 50;
